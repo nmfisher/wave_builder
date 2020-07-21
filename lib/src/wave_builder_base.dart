@@ -11,7 +11,8 @@ enum WaveBuilderSilenceType { BeginningOfLastSample, EndOfLastSample }
 class WaveBuilder {
   static const int RIFF_CHUNK_SIZE_INDEX = 4;
   static const int SUB_CHUNK_SIZE = 16;
-  static const int AUDIO_FORMAT = 1;
+  static const int AUDIO_FORMAT_PCM = 1;
+  static const int AUDIO_FORMAT_IEEE_FLOAT = 3;
   static const int BYTE_SIZE = 8;
 
   int _lastSampleSize;
@@ -30,14 +31,19 @@ class WaveBuilder {
   int _bitRate;
   int _frequency;
   int _numChannels;
+  int _audioFormat;
 
   /// Construct a wave builder.
   /// Supply audio file properties.
-  WaveBuilder({int bitRate = 16, int frequency = 44100, bool stereo = true}) {
+  WaveBuilder({int bitRate = 16, int frequency = 44100, bool stereo = true, int audioFormat=AUDIO_FORMAT_PCM}) {
+    if(audioFormat != AUDIO_FORMAT_IEEE_FLOAT && audioFormat != AUDIO_FORMAT_PCM)
+      throw Exception("Unsupported audio format");
+
     _outputBytes = <int>[];
     _bitRate = bitRate;
     _frequency = frequency;
     _numChannels = stereo ? 2 : 1;
+    _audioFormat = audioFormat;
     _initializeWave();
   }
 
@@ -58,7 +64,7 @@ class WaveBuilder {
     _outputBytes.addAll(
         ByteUtils.numberAsByteList(SUB_CHUNK_SIZE, 4, bigEndian: false));
     _outputBytes
-        .addAll(ByteUtils.numberAsByteList(AUDIO_FORMAT, 2, bigEndian: false));
+        .addAll(ByteUtils.numberAsByteList(_audioFormat, 2, bigEndian: false));
     _outputBytes
         .addAll(ByteUtils.numberAsByteList(_numChannels, 2, bigEndian: false));
     _outputBytes
@@ -69,6 +75,10 @@ class WaveBuilder {
         .addAll(ByteUtils.numberAsByteList(blockAlign, 2, bigEndian: false));
     _outputBytes
         .addAll(ByteUtils.numberAsByteList(bitsPerSample, 2, bigEndian: false));
+    // if(_audioFormat == AUDIO_FORMAT_IEEE_FLOAT) {
+    //   _outputBytes
+    //     .addAll(ByteUtils.numberAsByteList(0, 2, bigEndian:false));
+    // }
   }
 
   void _writeDataChunkHeader() {
