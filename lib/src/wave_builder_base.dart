@@ -15,7 +15,7 @@ class WaveBuilder {
   static const int AUDIO_FORMAT_IEEE_FLOAT = 3;
   static const int BYTE_SIZE = 8;
 
-  int _lastSampleSize;
+  late final int _lastSampleSize;
 
   /// Finalizes the header sizes and returns bytes
   List<int> get fileBytes {
@@ -23,15 +23,15 @@ class WaveBuilder {
     return _outputBytes;
   }
 
-  List<int> _outputBytes;
+  late final List<int> _outputBytes;
   final Utf8Encoder _utf8encoder = Utf8Encoder();
 
-  int _dataChunkSizeIndex;
+  late final int _dataChunkSizeIndex;
 
-  int _bitRate;
-  int _frequency;
-  int _numChannels;
-  int _audioFormat;
+  late final int _bitRate;
+  late final int _frequency;
+  late final int _numChannels;
+  late final int _audioFormat;
 
   /// Construct a wave builder.
   /// Supply audio file properties.
