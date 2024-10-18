@@ -15,7 +15,7 @@ class WaveBuilder {
   static const int AUDIO_FORMAT_IEEE_FLOAT = 3;
   static const int BYTE_SIZE = 8;
 
-  late final int _lastSampleSize;
+  late int _lastSampleSize;
 
   /// Finalizes the header sizes and returns bytes
   List<int> get fileBytes {
